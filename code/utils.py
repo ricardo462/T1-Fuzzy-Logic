@@ -3,6 +3,16 @@ import numpy
 
 order = {0:0.0, 1:1.0, 2:1.0, 3:0.0}
 def pertenencia(value: float, fuzzy_set:list) -> float :
+    if len(fuzzy_set) == 0:
+        return 0
+    if fuzzy_set[0] == fuzzy_set[1] and value <= fuzzy_set[0]:
+        return 1
+    if fuzzy_set[2] == fuzzy_set[3] and value >= fuzzy_set[3]:
+        return 1
+
+    if value >fuzzy_set[3] or value < fuzzy_set[0]:
+        return 0
+
     lenght = len(fuzzy_set)
     for i in range(lenght - 1):
         value_set = fuzzy_set[i]
@@ -85,6 +95,8 @@ def get_rules(e1, e2):
 
 
 def unir_reglas(rules):
+    if len(rules) == 0:
+        return []
     rule = rules[0]
     while len(rules) >1:
         rule = d_a(rules[0], rules[1])
@@ -95,6 +107,7 @@ def centro_de_gravedad(regla, num_points=41):
     values = []
     X = numpy.linspace(-1, 1, num_points)
     for x in X:
+        #print(x, regla, pertenencia(x, regla))
         values += [pertenencia(x, regla)*x]
     
     values = numpy.array(values)
@@ -105,20 +118,3 @@ def maquina_de_inferencia(e1, e2):
     rules = get_rules(e1, e2)
     regla = unir_reglas(rules)
     return centro_de_gravedad(regla)
-
-    
-
-if __name__ == '__main__':
-    ce = [-0.2, 0, 0, 0.2]
-    pp = [0.0, 0.2, 0.5, 0.7]
-    y = [0, 1.0, 1.0, 0]
-
-    r = d_a(ce, pp)
-    plt.figure(figsize = (10, 5))
-    plt.plot(r, y, label='pg')
-    plt.legend()
-    plt.title('Funciones de pertenencia difusos')
-    plt.ylabel('Grado de pertenencia')
-    plt.grid()
-
-    plt.show()
